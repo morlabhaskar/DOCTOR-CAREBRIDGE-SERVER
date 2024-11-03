@@ -141,37 +141,33 @@ const bookAppointment = async(req,res) => {
         }
 
         // Initialize or log slots_booked to ensure it's defined
-        let slots_booked = docData.slots_booked || {}
-        console.log("Initial Slots Booked:", slots_booked);
+        let slot_booked = docData.slot_booked || {}
+        console.log("Initial Slots Booked:", slot_booked);
 
         //checking for slot availability
-        if(slots_booked[slotDate]){
+        if(slot_booked[slotDate]){
             console.log(`Slot date ${slotDate} exists. Checking if time slot ${slotTime} is available...`);
-            if(slots_booked[slotDate].includes(slotTime)){
+            if(slot_booked[slotDate]?.includes(slotTime)){
                 console.log(`Slot ${slotTime} on ${slotDate} is already booked.`);
                 return res.json({success:false,message:"Time slot not available"})
             }
             else{
                 console.log(`Slot ${slotTime} on ${slotDate} is available, adding it.`);
-                slots_booked[slotDate].push(slotTime)
+                slot_booked[slotDate].push(slotTime)
             }
         }
         else{
             console.log(`Slot date ${slotDate} does not exist. Initializing and adding slot ${slotTime}.`);
-            slots_booked[slotDate] = []
-            slots_booked[slotDate].push(slotTime)
+            slot_booked[slotDate] = []
+            slot_booked[slotDate].push(slotTime)
         }
 
         const userData = await userModel.findById(userId).select('-password')
         console.log("User Data Retrieved:", userData);
 
-        if (!userData) {
-            console.log("User not found for ID:", userId);
-            return res.json({ success: false, message: "User not found" });
-        }
+        delete docData.slot_booked
 
-        delete docData.slots_booked
-
+    
         // Log appointment data before saving
         const appointmentData = {
             userId,
@@ -191,7 +187,7 @@ const bookAppointment = async(req,res) => {
         console.log("Appointment saved successfully");
 
         // Update doctor with new slot data
-        await doctorModel.findByIdAndUpdate(docId,{slots_booked})
+        await doctorModel.findByIdAndUpdate(docId,{slot_booked})
         console.log("Doctor's slots_booked updated successfully");
 
         res.json({success:true,message:"Appointment booked successfully"})
@@ -203,4 +199,20 @@ const bookAppointment = async(req,res) => {
 }
 
 
-export {registerUser,loginUser,getProfile,updateProfile,bookAppointment}
+
+
+//API for check the slot
+const getSlotBooking = async(req,res) => {
+    const { docId } = req.params;
+  try {
+    // Assume you have a model `Appointment` to fetch booked slots
+    const bookedSlots = await appointmentModel.find({ docId }).select('datetime -_id'); 
+    res.json({ success: true, bookedSlots });
+  } catch (error) {
+    console.error("Error fetching booked slots:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch booked slots" });
+  }
+}
+
+
+export {registerUser,loginUser,getProfile,updateProfile,bookAppointment,getSlotBooking}
