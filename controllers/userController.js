@@ -143,7 +143,8 @@ const bookAppointment = async(req,res) => {
         // Initialize or log slots_booked to ensure it's defined
         let slot_booked = docData.slot_booked || {}
         console.log("Initial Slots Booked:", slot_booked);
-
+        console.log("slot Data: ",slotDate)
+        
         //checking for slot availability
         if(slot_booked[slotDate]){
             console.log(`Slot date ${slotDate} exists. Checking if time slot ${slotTime} is available...`);
