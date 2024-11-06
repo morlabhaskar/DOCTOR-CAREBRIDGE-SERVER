@@ -211,9 +211,60 @@ const getSlotBooking = async(req,res) => {
     res.json({ success: true, bookedSlots });
   } catch (error) {
     console.error("Error fetching booked slots:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch booked slots" });
+    res.json({ success: false, message: "Failed to fetch booked slots" });
   }
 }
 
+//API to get user appointments for frontend my-appointments page
+const listAppointment = async (req,res) => {
+    try {
+        
+        const {userId} = req.body
+        const appointments = await appointmentModel.find({userId})
 
-export {registerUser,loginUser,getProfile,updateProfile,bookAppointment,getSlotBooking}
+        res.json({success:true,appointments})
+
+    } catch (error) {
+        console.error(error);
+    res.json({ success: false, message: error.message });
+    }
+}
+
+//API to cancel the appointment
+const cancelAppointment = async (req,res) => {
+    try {
+        
+        const {userId,appointmentId} = req.body
+        const appointmentData = await appointmentModel.find({appointmentId})
+
+        //verify appointment user
+        if(appointmentData.userId !== userId){
+            return res.json({success:false,message:"Unauthorized Action"})
+        }
+
+        await appointmentModel.findByIdAndUpdate(appointmentId,{cancelled:true})
+
+        //releasing doctor slot
+        const {docId,slotDate,slotTime} = appointmentData
+
+        const doctorData = await doctorModel.findById(docId)
+
+        let slot_booked = doctorData.slot_booked
+
+        slot_booked[slotDate] = slot_booked[slotDate.filter(e => e !== slotTime)]
+
+        await doctorModel.findByIdAndUpdate(docId,{slot_booked})
+
+        res.json({success:true,message:"Appointment Cancelled Successfully"})
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// 672604625d2092181da9dc3d
+// 672604625d2092181da9dc3d
+
+
+export {registerUser,loginUser,getProfile,updateProfile,bookAppointment,getSlotBooking,listAppointment,cancelAppointment}
