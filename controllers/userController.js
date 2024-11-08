@@ -235,7 +235,7 @@ const cancelAppointment = async (req,res) => {
     try {
         
         const {userId,appointmentId} = req.body
-        const appointmentData = await appointmentModel.find({appointmentId})
+        const appointmentData = await appointmentModel.findById(appointmentId)
 
         //verify appointment user
         if(appointmentData.userId !== userId){
@@ -251,7 +251,7 @@ const cancelAppointment = async (req,res) => {
 
         let slot_booked = doctorData.slot_booked
 
-        slot_booked[slotDate] = slot_booked[slotDate.filter(e => e !== slotTime)]
+        slot_booked[slotDate] = slot_booked[slotDate].filter(e => e !== slotTime)
 
         await doctorModel.findByIdAndUpdate(docId,{slot_booked})
 
