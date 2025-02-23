@@ -21,37 +21,38 @@ const changeAvailability = async(req,res) => {
 
 }
 
-// const deleteDoctor = async (req, res) => {
-//     try {
-//         const { docId } = req.body;
-
-//         const doctor = await doctorModel.findById(docId);
-//         if (!doctor) {
-//             return res.json({ success: false, message: "Doctor not found" });
-//         }
-
-//         await doctorModel.findByIdAndDelete(docId);
-//         res.json({ success: true, message: "Doctor deleted successfully" });
-//     } catch (error) {
-//         console.log(error);
-//         res.json({ success: false, message: error.message });
-//     }
-// };
 const deleteDoctor = async (req, res) => {
     try {
-        const {docId} = req.body;
-        const doctor = await doctorModel.findByIdAndDelete(docId);
-        
-        if(!doctor) {
+        const { docId } = req.body;
+
+        const doctor = await doctorModel.findById(docId);
+        if (!doctor) {
             return res.json({ success: false, message: "Doctor not found" });
         }
+
+        await doctorModel.findByIdAndDelete(docId);
         res.json({ success: true, message: "Doctor deleted successfully" });
     } catch (error) {
-        console.log(error)
-        res.status(404).json({error:"Internal Server Error"});
-        
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
 };
+
+// const deleteDoctor = async (req, res) => {
+//     try {
+//         const {docId} = req.body;
+//         const doctor = await doctorModel.findByIdAndDelete(docId);
+        
+//         if(!doctor) {
+//             return res.json({ success: false, message: "Doctor not found" });
+//         }
+//         res.json({ success: true, message: "Doctor deleted successfully" });
+//     } catch (error) {
+//         console.log(error)
+//         res.status(404).json({error:"Internal Server Error"});
+        
+//     }
+// };
 
 const doctorList = async (req,res) => {
     try {
