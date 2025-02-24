@@ -203,8 +203,27 @@ const updateDoctorProfile = async (req,res) => {
     }
 }
 
+//get all doctors list for Doctor pannel
+const allDoctors = async (req,res) => {
+    try {
+
+        const doctors = await doctorModel.find({}).select('-password')
+        res.json({success:true,doctors})
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false,message:error.message})
+        
+    }
+}
+
+
+
+
+
 export {
     changeAvailability,doctorList,loginDoctor,
     appointmentsDoctor,appointmentComplete,appointmentCancel,
-    doctorDashboard,doctorProfile,updateDoctorProfile,deleteDoctor
+    doctorDashboard,doctorProfile,updateDoctorProfile,deleteDoctor,
+    allDoctors
 }
