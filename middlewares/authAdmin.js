@@ -3,16 +3,14 @@ import jwt from 'jsonwebtoken'
 //Admin authentication middleware
 const authAdmin = async (req,res,next) => {
     try {
-        console.log("Headers Received:", req.headers);
         const {atoken} = req.headers
         if(!atoken) {
-            console.log("❌ No token received!");
-            return res.json({success:false,message:"Not Authorized Login one"})
+            return res.json({success:false,message:"Not Authorized Login Admin Token is Required"})
         }
         const token_decode = jwt.verify(atoken,process.env.JWT_SECRET)
 
         if(token_decode !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD){
-            return res.json({success:false,message:"Not Autorized Login to"})
+            return res.json({success:false,message:"Not Autorized Login Email and Password is Not Match"})
         }
         next()
 
