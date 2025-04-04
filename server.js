@@ -18,8 +18,11 @@ connectDB()
 connectCloudinary()
 
 //middlewares
+const allowedOrigins = ['http://localhost:5173','http://localhost:5174','https://doctor-carebridge.vercel.app'];
+
 app.use(express.json())
-app.use(cors())
+app.use(cors({origin:allowedOrigins,credentials:true}))
+// app.use(cors())
 
 //api endpoint
 app.use('/api/admin',adminRouter)
